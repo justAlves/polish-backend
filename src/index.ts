@@ -5,7 +5,7 @@ import { betterAuthModule } from "./config/auth";
 const app = new Elysia()
   .use(
     cors({
-      origin: "*",
+      origin: ["*", "exp://192.168.*.*:*/**", "polish://"],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization"],
