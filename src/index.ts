@@ -1,7 +1,21 @@
 import { Elysia } from "elysia";
+import cors from "@elysiajs/cors";
+import { betterAuthModule } from "./config/auth";
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
+const app = new Elysia()
+  .use(
+    cors({
+      origin: "*",
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      credentials: true,
+      allowedHeaders: ["Content-Type", "Authorization"],
+    }),
+  )
+  .use(betterAuthModule)
+  .get("/", () => "")
+  .get("/health", () => "Healthy")
+  .listen(3000);
 
 console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
 );
