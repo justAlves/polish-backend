@@ -8,7 +8,7 @@ COPY prisma ./prisma
 RUN bun install --frozen-lockfile || bun install
 
 # Generate Prisma client
-RUN bunx prisma generate
+RUN bunx prisma generate --schema ./prisma/schema
 
 # Production image
 FROM base
