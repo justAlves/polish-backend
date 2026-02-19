@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(bun add:*)",
+      "Bash(bunx prisma generate:*)",
+      "Bash(bunx prisma db push:*)",
+      "Bash(timeout 8 bun run:*)",
+      "Bash(timeout 5 bun run:*)"
+    ]
+  }
+}

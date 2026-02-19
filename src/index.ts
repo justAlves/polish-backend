@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import cors from "@elysiajs/cors";
 import { betterAuthModule } from "./config/auth";
+import { ChatModule } from "./modules/chat";
 
 const app = new Elysia()
   .use(
@@ -12,6 +13,7 @@ const app = new Elysia()
     }),
   )
   .use(betterAuthModule)
+  .use(ChatModule)
   .get("/", () => "")
   .get("/health", () => "Healthy")
   .listen(3000);

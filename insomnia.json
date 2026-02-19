@@ -1,0 +1,76 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "resources": [
+    {
+      "_id": "wrk_polish",
+      "_type": "workspace",
+      "name": "Polish Backend",
+      "description": "API de chat por voz com IA"
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_polish",
+      "name": "Local",
+      "data": {
+        "base_url": "http://localhost:3000"
+      }
+    },
+    {
+      "_id": "fld_chat",
+      "_type": "request_group",
+      "parentId": "wrk_polish",
+      "name": "Chat"
+    },
+    {
+      "_id": "req_create_conversation",
+      "_type": "request",
+      "parentId": "fld_chat",
+      "name": "Criar Conversa",
+      "method": "POST",
+      "url": "{{ _.base_url }}/chat/conversations",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"language\": \"en\"\n}"
+      }
+    },
+    {
+      "_id": "req_list_conversations",
+      "_type": "request",
+      "parentId": "fld_chat",
+      "name": "Listar Conversas",
+      "method": "GET",
+      "url": "{{ _.base_url }}/chat/conversations"
+    },
+    {
+      "_id": "req_get_conversation",
+      "_type": "request",
+      "parentId": "fld_chat",
+      "name": "Detalhes da Conversa",
+      "method": "GET",
+      "url": "{{ _.base_url }}/chat/conversations/CONVERSATION_ID_AQUI"
+    },
+    {
+      "_id": "req_send_message",
+      "_type": "request",
+      "parentId": "fld_chat",
+      "name": "Enviar Audio (Mensagem)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/chat/conversations/CONVERSATION_ID_AQUI/message",
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "audio",
+            "type": "file",
+            "fileName": ""
+          }
+        ]
+      }
+    }
+  ]
+}
