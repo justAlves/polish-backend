@@ -47,7 +47,7 @@ export async function transcribe(
       ? "m4a"
       : "wav";
 
-  const file = new File([audioBuffer], `audio.${ext}`, { type: mimeType });
+  const file = new File([new Uint8Array(audioBuffer)], `audio.${ext}`, { type: mimeType });
 
   const transcription = await getGroq().audio.transcriptions.create({
     file,
