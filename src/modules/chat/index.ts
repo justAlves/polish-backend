@@ -41,7 +41,8 @@ export const ChatModule = new Elysia({ prefix: "/chat" })
 
   .post(
     "/conversations/:id/message",
-    async ({ params, body, status }) => {
+      //@ts-ignore - Elysia's type inference struggles with the auth macro
+    async ({ params, body, status, userId }) => {
       const conversation = await ChatService.getConversation(params.id);
       if (!conversation) return status(404);
 

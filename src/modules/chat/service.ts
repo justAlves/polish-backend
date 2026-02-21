@@ -63,9 +63,9 @@ export abstract class ChatService {
     });
   }
 
-  static async getConversation(id: string) {
+  static async getConversation(id: string, userId?: string) {
     return prisma.conversation.findFirst({
-      where: { id },
+      where: { id, userId },
       include: {
         messages: { orderBy: { createdAt: "asc" } },
       },
