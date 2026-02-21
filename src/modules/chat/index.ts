@@ -1,21 +1,29 @@
 import { Elysia, t } from "elysia";
 import { ChatService } from "./service";
+import { betterAuthModule } from "../../config/auth";
 
 export const ChatModule = new Elysia({ prefix: "/chat" })
+  .use(betterAuthModule)
   .post(
     "/conversations",
-    async ({ body }) => {
-      return ChatService.createConversation(body.language);
+    async ({ body, user }) => {
+      return ChatService.createConversation(body.language, user.id);
     },
     {
       body: t.Object({
         language: t.String(),
       }),
+      auth: true,
     },
   )
 
-  .get("/conversations", async () => {
-    return ChatService.listConversations();
+  .get("/conversations", async ({ user }) => {
+
+    
+    const conversations = await ChatService.listConversations(user.id);
+    return conversations;
+  }, {
+    auth: true,
   })
 
   .get(
@@ -25,6 +33,9 @@ export const ChatModule = new Elysia({ prefix: "/chat" })
       if (!conversation) return status(404);
       return conversation;
     },
+    {
+      auth: true,
+    }
   )
 
   .post(
@@ -44,5 +55,6 @@ export const ChatModule = new Elysia({ prefix: "/chat" })
       body: t.Object({
         audio: t.File(),
       }),
+      auth: true,
     },
   );

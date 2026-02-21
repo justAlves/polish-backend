@@ -2,22 +2,64 @@ import { prisma } from "../../config/prisma";
 import { transcribe, chatCompletion } from "../../services/groq";
 import { synthesize } from "../../services/tts";
 
+const LANGUAGE_INFO: Record<string, { nativeName: string; flag: string }> = {
+  en: { nativeName: "English", flag: "🇺🇸" },
+  es: { nativeName: "Español", flag: "🇪🇸" },
+  fr: { nativeName: "Français", flag: "🇫🇷" },
+  de: { nativeName: "Deutsch", flag: "🇩🇪" },
+  it: { nativeName: "Italiano", flag: "🇮🇹" },
+  pt: { nativeName: "Português", flag: "🇧🇷" },
+  ja: { nativeName: "日本語", flag: "🇯🇵" },
+  zh: { nativeName: "中文", flag: "🇨🇳" },
+  ko: { nativeName: "한국어", flag: "🇰🇷" },
+};
+
+function formatDate(date: Date): string {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today.getTime() - 86400000);
+  const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const time = `${hours}h${minutes}`;
+
+  if (dateOnly.getTime() === today.getTime()) return `Hoje, ${time}`;
+  if (dateOnly.getTime() === yesterday.getTime()) return `Ontem, ${time}`;
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  return `${day}/${month}, ${time}`;
+}
+
+function formatDuration(start: Date, end: Date): string {
+  const minutes = Math.max(1, Math.round((end.getTime() - start.getTime()) / 60000));
+  return `${minutes} min`;
+}
+
 export abstract class ChatService {
-  static async createConversation(language: string) {
+  static async createConversation(language: string, userId: string) {
     return prisma.conversation.create({
-      data: { language },
+      data: { language, userId },
     });
   }
 
-  static async listConversations() {
-    return prisma.conversation.findMany({
+  static async listConversations(userId?: string) {
+    const rows = await prisma.conversation.findMany({
+      where: userId ? { userId } : undefined,
       orderBy: { updatedAt: "desc" },
-      include: {
-        messages: {
-          orderBy: { createdAt: "desc" },
-          take: 1,
-        },
-      },
+    });
+
+    return rows.map((c) => {
+      const info = LANGUAGE_INFO[c.language] ?? { nativeName: c.language, flag: "🌐" };
+      return {
+        id: c.id,
+        language: info.nativeName,
+        nativeName: info.nativeName,
+        flag: info.flag,
+        date: formatDate(c.updatedAt),
+        duration: formatDuration(c.createdAt, c.updatedAt),
+      };
     });
   }
 
